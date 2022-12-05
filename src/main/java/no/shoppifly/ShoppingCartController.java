@@ -3,17 +3,13 @@ package no.shoppifly;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import io.micrometer.core.instrument.MeterRegistry;
-
 import java.util.List;
 
 @RestController()
 public class ShoppingCartController {
-    private MeterRegistry meterRegistry;
-    
+
     @Autowired
     private final CartService cartService;
-
 
     public ShoppingCartController(CartService cartService) {
         this.cartService = cartService;
@@ -21,7 +17,6 @@ public class ShoppingCartController {
 
     @GetMapping(path = "/cart/{id}")
     public Cart getCart(@PathVariable String id) {
-        meterRegistry.counter("amount_of_carts").increment();
         return cartService.getCart(id);
     }
 
@@ -32,7 +27,6 @@ public class ShoppingCartController {
      */
     @PostMapping(path = "/cart/checkout")
     public String checkout(@RequestBody Cart cart) {
-        meterRegistry.counter("amount_of_carts").increment(-1);
         return cartService.checkout(cart);
     }
 
