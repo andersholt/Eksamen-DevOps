@@ -13,5 +13,7 @@ public interface CartService {
 
     String checkout(Cart cart);
 
-    List<String> getAllsCarts();
+    List<String> getAllCarts();
+
+    float total();
 }
