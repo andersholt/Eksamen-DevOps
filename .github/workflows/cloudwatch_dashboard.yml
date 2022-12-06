@@ -24,9 +24,7 @@ jobs:
         id: init
         run: terraform init
         
-      - name: Import config
-        id: config
-        run: terraform import aws_s3_bucket.analyticsbucket analytics-$CANDIDATE_ID
+
         
       - name: Terraform Plan
         id: plan
