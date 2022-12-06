@@ -8,6 +8,7 @@
         <version>2.5.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    
     <groupId>no.glennbech.pgr301</groupId>
     <artifactId>onlinestore</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -15,6 +16,7 @@
     <description>Naive implementation of an online store</description>
     <properties>
         <java.version>11</java.version>
+        <aws.sdk.version>2.17.292</aws.sdk.version>
     </properties>
     <dependencies>
         <dependency>
@@ -50,6 +52,22 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        	<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-cloudwatch2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>utils</artifactId>
+			<version>${aws.sdk.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>aws-sdk-java</artifactId>
+			<version>${aws.sdk.version}</version>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
 
     <build>

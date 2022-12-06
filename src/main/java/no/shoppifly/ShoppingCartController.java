@@ -1,17 +1,24 @@
 package no.shoppifly;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import io.micrometer.core.instrument.MeterRegistry;
 
+import java.time.Duration;
 import java.util.List;
 
 @RestController()
-public class ShoppingCartController {
+public class ShoppingCartController{
 
-    @Autowired
+    private Timer checkoutTimer;
+    private MeterRegistry meterRegistry;
     private final CartService cartService;
-
-    public ShoppingCartController(CartService cartService) {
+    @Autowired
+    public ShoppingCartController(MeterRegistry meterRegistry, CartService cartService){
+        this.meterRegistry = meterRegistry;
+        checkoutTimer = meterRegistry.timer("checkout_latency");
         this.cartService = cartService;
     }
 
@@ -27,7 +34,13 @@ public class ShoppingCartController {
      */
     @PostMapping(path = "/cart/checkout")
     public String checkout(@RequestBody Cart cart) {
-        return cartService.checkout(cart);
+        long startTime = System.currentTimeMillis();
+        String checkout = cartService.checkout(cart);
+        meterRegistry.counter("checkouts").increment(1);
+        checkoutTimer.record(Duration
+                .ofMillis(System.currentTimeMillis()
+                        - startTime));
+        return checkout;
     }
 
     /**
@@ -38,6 +51,12 @@ public class ShoppingCartController {
      */
     @PostMapping(path = "/cart")
     public Cart updateCart(@RequestBody Cart cart) {
+        Gauge.builder("carts", cartService.getAllCarts(), List::size)
+                .strongReference(true)
+                .register(meterRegistry);
+        Gauge.builder("cartsvalue", cartService.total(), Float::doubleValue)
+                .strongReference(true)
+                .register(meterRegistry);
         return cartService.update(cart);
     }
 
@@ -48,8 +67,6 @@ public class ShoppingCartController {
      */
     @GetMapping(path = "/carts")
     public List<String> getAllCarts() {
-        return cartService.getAllsCarts();
+        return cartService.getAllCarts();
     }
-
-
 }
