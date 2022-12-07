@@ -7,18 +7,25 @@ import org.springframework.web.bind.annotation.*;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController()
 public class ShoppingCartController{
 
-    private Timer checkoutTimer;
-    private MeterRegistry meterRegistry;
+    private final Timer checkoutTimer;
+    private final MeterRegistry meterRegistry;
+    private final AtomicInteger cartsValue;
+    private final AtomicInteger amountOfCarts;
+
     private final CartService cartService;
     @Autowired
     public ShoppingCartController(MeterRegistry meterRegistry, CartService cartService){
         this.meterRegistry = meterRegistry;
         checkoutTimer = meterRegistry.timer("checkout_latency");
+        cartsValue = meterRegistry.gauge("cartsvalue", new AtomicInteger(0));
+        amountOfCarts = meterRegistry.gauge("carts", new AtomicInteger(0));
         this.cartService = cartService;
     }
 
@@ -37,13 +44,11 @@ public class ShoppingCartController{
         long startTime = System.currentTimeMillis();
         String checkout = cartService.checkout(cart);
         meterRegistry.counter("checkouts").increment();
-        
+        cartsValue.set((int) cartService.total());
+        amountOfCarts.set(cartService.getAllCarts().size());
         checkoutTimer.record(Duration
                 .ofMillis(System.currentTimeMillis()
                         - startTime));
-                        
-        meterRegistry.counter("carts").increment(-1);
-
         return checkout;
     }
 
@@ -55,15 +60,9 @@ public class ShoppingCartController{
      */
     @PostMapping(path = "/cart")
     public Cart updateCart(@RequestBody Cart cart) {
-   
-        Gauge.builder("cartsvalue", cartService.total(), Float::doubleValue)
-                .register(meterRegistry);
-
-        if(cart.getId() == null){
-           meterRegistry.counter("carts").increment();
-        }
-
-        return cart;
+        cartsValue.set((int) cartService.total());
+        amountOfCarts.set(cartService.getAllCarts().size());
+        return cartService.update(cart);
     }
 
     /**
