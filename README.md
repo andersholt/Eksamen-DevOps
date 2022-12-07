@@ -1,274 +1,6 @@
 # DevOps med gode intensjoner
 
-## Krav til leveransen
-
-* Eksamensoppgaven er gitt på GitHub repository ; https://github.com/PGR301-2022/eksamen_2022
-* Du skal ikke lage en fork av dette repositoryet, men kopiere innholdet til et nytt. Årsaken er at sensor vil lage en fork av ditt repo, og arbeidsflyten blir lettere hvis ditt repo ikke er en fork. 
-* Du kan jobbe i et public-, eller privat repo, og deretter gjøre det public noen timer etter innleveringsfrist hvis du er bekymret for plagiat fra medstudenter.
-
-Når sensor evaluerer oppgaven vil han/hun se på
-
-* Ditt repository og "Actions" fanen i GutHub for å bekrefte at Workflows faktisk virker
-* AWS miljøet i klassens AWS konto for å bekrefte at oppgaver som beskrevet er utført
-* Vurdere drøftelsesoppgavene. Du må lage en  "Readme" for besvarelsen i ditt repo.
-* Sensor vil Lage en fork av ditt repo og tester ut pipelines med egen AWS bruker/github bruker.
-
-Ved innlevering via WiseFlow, lager du et *tekstdokument* som kun inneholder link til dit repository
-
-## Litt om GitHub free tier
-
-* I oppgaven blir du bedt om å lage GitHub actions workflows.
-* Med GitHub "Free tier" har du 2,000 minutter med gratis byggetid per måned, dersom du bruker et privat repo.
-* Dersom dere i en ekstrem situasjon skulle trenge mer byggetid, kan dere gjøre repository public. Da er byggetiden ubegrenset.
-* Hvis dere da er bekymret for at andre skal kopiere arbeidet deres, kan dere lage en ny GitHub bruker med et tilfeldig navn.
-
-OBS!
-
-* I "Free" planen til GitHub er "branch protection" ikke tillat når et repository er privat. Det vil si at dere ikke kan konfigurere GitHub til å hindre push mot for eksempel _main_ branch direkte, eller konfigurere regler for godkjenning før merge av pull request osv.
-* I denne oppgaven blir dere bedt om å beskrive _hvordan_ dette kan gjøres, men dere trenger altså ikke konfigurere dette for repoet dere leverer.
-
-## Evaluering
-
-* Del 1 DevOps-prinsipper - 20 poeng
-* Del 2 CI - 20 poeng
-* Del 3 Docker - 20 poeng
-* Del 4 Del - Metrics med Micrometer 20 poeng
-* Del 5 Del - Terraform og CloudWatch Dashboards - 20 poeng
-
-## Utvikling i Cloud 9
-
-Dere kan bruke et utviklingsmiljø i Cloud 9. https://244530008913.signin.aws.amazon.com/console - logg på med studentnavn.
-Cloud9 miljøene er ble laget på nytt i løpet av helgen før eksamen starter, passord er det "vanlige"
-
-* Siden Cloud 9 miljøet blir laget på nytt før eksamen; må du installere Maven, sette opp "credential helper" osv. Se på en av øvingene vi har gjort i semesteret. 
-
-Hvis dere får følgende feilmelding når dere bygger koden med maven i Cloud9, må dere bare gjøre en "mvn clean"
-
-```text
-java.lang.Error: 
-Unresolved compilation problem: 
-        The method builder() is undefined for the type Cart
-        at no.shoppifly.CartServiceTest.shouldRemoveCartAfterCheckout(CartServiceTest.java:13)
-```
-
-### Bonusoppgave - 5 Poeng
-
-Vi fant aldi ut av hvorfor ovnernevnte problem oppstår av og til med Maven i Cloud9. Hvis du klarer å reprodusere feilen konsekvent
-og kan komme med en forklaring på hvorfor dette skjer, og hva vi kan gjøre for å fikse det, gis 5 ekstra poeng. 
-
-## Scenario
-
-Som DevOps-ekspert, ferdig utlært fra Høgskolen Kristiania blir du ansatt i en bedrift, "Shopifly" som selger droner, 
-men også andre varer nå som det nærmer seg jul. 
-
-Shopifly har store utfordringer med utviklingsprosessen sin
-
-* De deployer kode første mandag i kvartalet.
-* De pleide å deploye oftere før- men dette førte til ustabilitet. Selskapet ansatte flere testere, og startet en prosess der utviklingsledere måtte se over og godkjenne alle leveranser. De senket samtidig frekvensen på leveransene sine for å få bedre stabilitet.  
-* Når de deployer, feiler det fortsatt ofte. Da ruller de tilbake til forrige versjon, og ny funksjonalitet blir derfor ofte forsinket i månedsvis
-
-* Leveransen skjer ved at Utviklingsteamet bruker FTP til å overføre en Spring boot JAR sammen med dokumentasjon i en
-  ZIP. En egen avdeling tar i mot disse filene og installerer i AWS / Produksjon.
-
-For å løse problemene sine, leide selskapet så inn DevOps-kompetanse fra Gaffel Consulting. Etter å ha sendt fire
-juniorkonsulenter som fakturerte for en liten formue ble det klart at de aldri kom til å klare å levere, og kontrakten ble sagt opp.
-"Jim" den "mest senior" av juniorkonsulentene har lagt inn noen kommentarer i koden som kan være til hjelp. 
-
-Det Gaffel Consulting klarte å levere på den medgåtte tiden ligger i dette repositoryet. 
-
-Nå er det din tur til å ta over!
-
-## Beskrivelse av API
-
-Selskapet driver med elektronisk handel, og fokus for denne oppgaven er et API som 
-implementerer en handlekurv. Gjør deg godt kjent med APIet og hvordan det virker - via Postman / Curl før du starter på oppgaven.
-
-Du kan starte applikasjonen, enten i ditt Cloud9 miljø- eller på lokal maskin med kommandoen 
-
-```sh
-mvn spring-boot:run
-```
-
-### Request headers
-
-OBS! For alle reqestene trenger å du sette HTTP header 'Content-Type: application/json'
-
-### Opprette handlekurv - POST /cart
-
-Du kan lage ny handlekurv ved å gjøre en HTTP POST til ````/cart````
-Uten "id"
-
-*Request body*
-
-```json
-{
-  "items": [
-    {
-      "description": "Ugly christmas sweater",
-      "qty": "1",
-      "unitPrice": "500"
-    }
-  ]
-}
-```
-
-*Respons*
-
-*id* blir satt automatisk
-
-```json
-{
-  "id": "fb49e386-7124-4c16-9067-2dde2ee75d4e",
-  "items": [
-    {
-      "description": "Ugly christmas sweater",
-      "qty": 1,
-      "unitPrice": 500.0
-    }
-  ]
-}
-
-```
-
-*Curl-eksempel*
-
-```sh 
-curl --location --request POST 'http://localhost:8080/cart' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-      "items": 
-      [
-        {
-          "description": "Ugly christmas sweater",
-          "qty": "1",
-          "unitPrice": "500"
-        }
-      ]
-  }'
-```
-
-### Oppdatere handlekurv - POST /cart
-
-Du kan poste et helt cart-objekt med en "id" for å oppdatere handlekurven
-
-*Request*
-
-````json 
-{
-    "id": "fb49e386-7124-4c16-9067-2dde2ee75d4e",
-    "items": [
-        {
-            "description": "Ugly christmas sweater",
-            "qty": 1,
-            "unitPrice": 500.0
-        },
-        {
-            "description": "Shark socks",
-            "qty": 20,
-            "unitPrice": 10.0
-        }
-    ]
-}
-````
-
-*Response*
-
-Samme som request
-
-#### Eksempel Curl kommando
-
-```sh
-curl --location --request POST 'http://localhost:8080/cart' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "id": "fb49e386-7124-4c16-9067-2dde2ee75d4e",
-    "items": [
-        {
-            "description": "Ugly christmas sweater",
-            "qty": 1,
-            "unitPrice": 500.0
-        },
-        {
-            "description": "Shark socks",
-            "qty": 20,
-            "unitPrice": 10.0
-        }
-    ]
-}'
-```
-
-### Fullføre handel - POST /cart/checkout
-
-Sjekker ut handlekurven, sletter den fra listen over aktive handlekurver og returnerer en ordre ID
-
-#### request
-
-````json 
-{
-    "id": "fb49e386-7124-4c16-9067-2dde2ee75d4e",
-    "items": [
-        {
-            "description": "Cheap 4K Drone with spare parts (needed)",
-            "qty": 1,
-            "unitPrice": 500.0
-        },
-        {
-            "description": "Shark socks",
-            "qty": 20,
-            "unitPrice": 10.0
-        }
-    ]
-}
-````
-
-#### Response
-
-```text
-25d07757-4e56-408c-be30-a0568d35a70d
-```
-
-* Eksempel Curl kommando*
-
-```sh
-curl --location --request POST 'http://localhost:8080/cart/checkout' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "id": "fb49e386-7124-4c16-9067-2dde2ee75d4e",
-    "items": [
-        {
-            "description": "Ugly christmas sweater with Drone logo",
-            "qty": 1,
-            "unitPrice": 500.0
-        },
-        {
-            "description": "Shark socks",
-            "qty": 20,
-            "unitPrice": 10.0
-        }
-    ]
-}'
-```
-
-### Hente alle handlekurver - GET /carts
-
-Du kan få en oversikt over alle aktive handlekurver med dette endepunktet. 
-
-*Response*
-
-```json
-[
-"4eb4d739-5df9-48b1-84c0-57c039d4fe35",
-"cc7068e8-b855-416f-a34c-65dcdf478174",
-"9e1e846f-45b7-472d-8bde-af9eba3224a5"
-]
-```
-
-*Eksempel Curl kommando*
-
-```sh 
-curl --location --request GET 'http://localhost:8080/carts' \
---header 'Content-Type: application/json'
-```
+Lenkene i svarene er lenket til siste versjon av filene, jeg legger derfor ved kodeblokker som viser hvilke endringer som er blitt gjort underveis.
 
 ## Del 1 DevOps-prinsipper
 
@@ -276,53 +8,165 @@ Beskriv med egne ord;
 
 * Hva er utfordringene med dagens systemutviklingsprosess - og hvordan vil innføring av DevOps kunne være med på å løse
   disse? Hvilke DevOps prinsipper blir brutt?
+
+De deployer kode første mandag i kvartalet.
+
+Svar:
+Problemet her er at det da vil være mye kode å gå gjennom for hver leveranse. Utviklingslederne må fortsatt bruke mye 
+tid på å gå gjennom alle leveransene, og mye funksjonalitet må derfor bli skrotet.
+
+De pleide å deploye oftere før- men dette førte til ustabilitet. Selskapet ansatte flere testere, 
+og startet en prosess der utviklingsledere måtte se over og godkjenne alle leveranser. 
+De senket samtidig frekvensen på leveransene sine for å få bedre stabilitet.
+
+Svar:
+Det virker som om selve koden som ble deployet var av hørere kvalitet tidligere, men at de fikk en
+flaskehals i og med at utviklingslederne måtte bruke tid på å se over og godkjenne leveransene. Her
+kunne de fått en bedre flyt ved at flere går over koden og sørger for at alle leveransene går gjennom.
+
+Når de deployer, feiler det fortsatt ofte. Da ruller de tilbake til forrige versjon, og ny
+funksjonalitet blir derfor ofte forsinket i månedsvis
+
+Svar:
+
+
+Leveransen skjer ved at Utviklingsteamet bruker FTP til å overføre en Spring boot JAR sammen med 
+dokumentasjon i en ZIP. En egen avdeling tar i mot disse filene og installerer i AWS / Produksjon.
+
+Svar:
+
+Her kunne de ha opprettet en pipeline i github, som deployer for de automatisk.
+
+
+
+
+
 * En vanlig respons på mange feil under release av ny funksjonalitet er å gjøre det mindre hyppig, og samtidig forsøke å legge på mer kontroll og QA. Hva er problemet med dette ut ifra et DevOps perspektiv, og hva kan være en bedre tilnærming?
-* Teamet overleverer kode til en annen avdelng som har ansvar for drift - hva er utfordringen med dette ut ifra et DevOps perspektiv, og hvilke gevinster kan man få ved at team han ansvar for både drift- og utvikling? 
+* Teamet overleverer kode til en annen avdelng som har ansvar for drift - hva er utfordringen med dette ut ifra et DevOps perspektiv, og hvilke gevinster kan man få ved at team han ansvar for både drift- og utvikling?
+
+Den største utfordringen ved å dele opp i en utviklings-avdeling og en drift-avdeling, er at drift-avdelingen ikke nødvendigvis forstår koden og virkemåten bak funksjonaliteten som er levert. Dette kan føre til tapt tid og ressurser da driftsavdelingen må håndtere denne feilen. Samtidig har utviklerteamet hands on erfaring med koden, og forstår kanskje hva som har gått galt i løsningen, og hvordan det skal rettes.
+
+Utviklerteamet vil trolig også finne frem den beste løsningen for feilen i koden, 
+samtidig som ops-teamet kanskje vil finne den raskeste løsningen for å løse feilen 
+som har oppstått -> Feilrettingen kan være svak, noe som gjør at løsningen kan feile 
+enda en gang på samme sted.
+
+Dette fører til tapt tid, i og med at driftsavdelingen må sette seg inn i kode som 
+utviklings-avdelingen allerede har kjennskap til.
+
+Noen av gevinstene ved å kombinere disse avdelingen er:
+-	Sikrere drift: Dersom feil oppstår vil et kombinert team ha kunnskap med hvordan 
+- systemet fungerer, og feilrettingen vil derfor i de fleste tilfeller gå raskere, 
+- og det kombinerte teamet vil mest sannsynlig også komme med en god måte å rette opp 
+- feilen (ved å foreksempel ikke legge in exceptions på funksjonalitet som er nødvendig).
+-	Raskere feilretting.
+-	Vi slipper endring av kontekst for de ulike teamene.
+     Hva taper man ved å kombinere team:
+-	Man får kanskje tregere utvikling, siden man teamet vil ha et større
+     ansvarsområde.
+     Vi ønsker ferrest mulig overleveringer.
+
+
 * Å release kode ofte kan også by på utfordringer. Beskriv hvilke- og hvordan vi kan bruke DevOps prinsipper til å redusere
   eller fjerne risiko ved hyppige leveraner.
 
+Automatisering: Vi har har en CI/CD pipeline som kjører alle tester ved deployment, og godkjenning av pull/merge-requests 
+inn til main/master branchen i koden. Vi bør også legge inn en sperre for å pushe kode direkte til main/master.
+
 ## Del 2 - CI
-
-Konsulentene som har jobbet med innføring av DevOps har startet på en GitHub actions workflow for kontinuerlig
-integrasjon. GitHub actions workflow (yml) filen ligger i dette repositoryet og heter ````ci.yml````
-
-Problemet er at utviklingsteamet må starte jobben manuelt fra GitHub actions brukergrensesnittet. Det er jo ikke bra!
-
-Du kan gjerne teste dette selv ved å gå til "Actions" i ditt repository, du vil se teksten "This workflow has a workflow_dispatch event trigger." Og vil
-ha et valg som heter "Run workflow"
 
 ### Oppgave 1 
 
-* Start med å få workflowen til å kjøre når det lages en pull request, og på hver push til main branch
+* Start med å få workflowen til å kjøre når det lages en pull request, og på hver push til main branch:
+---
+I [ci.yml](.github/workflows/ci.yml) ser vi at workflowen kun skal kjøre ved workflow_dispatch, som dukker opp som et valg i github actions.
+Vi endrer kriteriene for at workflowen skal kjøre, her vil den kjøre på push til main, og alle pull requests:
+```yml
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+```
 
 ### Oppgave 2 
+<details><summary>Oppgavetekst</summary>
 
-Det er andre utfordringer med denne flyten også; Workflowen kjører "ok" selv om det åpenbart er unit-testfeil i koden. 
+* Få først ```ci.yml```workflow til å feile fordi enhetstesten feiler.
 
-* Få først ```ci.yml```workflow til å feile fordi enhetstesten feiler. 
-* Rett deretter enhetstesten og se at pipeline kjører "ok".  
-* Workflowen skal kompilere javakoden og kjøre enhetstester på hver eneste push, *uavhengig av branch* 
+* Rett deretter enhetstesten og se at pipeline kjører "ok".
+
+* Workflowen skal kompilere javakoden og kjøre enhetstester på hver eneste push, *uavhengig av branch*
+</details>
+
+---
+
+* Gjør slik at testene kjører endre Build with Maven slik at den bygger med testene:
+```yml
+- name: Build with Maven
+  run: mvn -B package --file pom.xml
+```
+
+* Enhetstesten forventer at antall handlekurver skal være 100 etter at vi har lagt til og sjekket ut en handlekurv.
+Jeg endrer enhetstesten slik at den forventer 0 istedet, og testen kjører grønt.
+
+* Her må vi endre på [ci.yml](.github/workflows/ci.yml) med nye krav for at workflowen skal kjøre:
+```yml
+on: [push, pull_request]
+```
 
 ### Oppgave 3 
-
+<details><summary>Oppgavetekst</summary>
 Branch protection og status sjekker - Beskriv hva sensor må gjøre for å konfigurere sin fork på en slik måte
 at
 
 * Ingen kan pushe kode direkte på main branch
 * Kode kan merges til main branch ved å lage en Pull request med minst en godkjenning
 * Kode kan merges til main bare når feature branchen som pull requesten er basert på, er verifisert av GitHub Actions.
+</details>
 
+----
+
+Fra roten av repoet/forken:
+
+-> Trykk på "Settings"
+
+-> Trykk på "Branches"
+
+-> Trykk på "Add branch protection rule"
+
+-> Skriv "main" i Branch name pattern
+
+-> Huk av "Require pull request before merging"
+
+-> Huk av "Require status checks to pass before merging" (i feltet som dukker opp må du skrive og velge ```build```)
+
+-> Huk av "Do not allow bypassing the above settings", slik at vi er helt sikre på at reglene som er satt ikke blir overstyrt.
+
+Ferdig!
+
+Du kan sjekke om dette virker ved å forsøke å pushe direkte til main. Du vil da få en feilmeling som denne:
+```
+remote: error: GH006: Protected branch update failed for refs/heads/main.
+remote: error: Required status check "build" is expected. At least 1 approving review is required by reviewers with write access.
+To https://github.com/<DINFORK>/Eksamen-DevOps.git
+```
 ## Del 3 - Docker
 
-Applikasjonen er laget for å pushe et container image til Docker Hub. 
-
-Det ligger en ```Dockerfile``` i prosjektet, og en workflow fil som heter ```docker.yml``` .
-
 ### Oppgave 1
+<details><summary>Oppgavetekst</summary>
+Beskriv hva du må gjøre for å få workflow til å fungere med din DockerHub konto? Hvorfor feiler workflowen?
+</details>
 
-Beskriv hva du må gjøre for å få workflow til å fungere med din DockerHub konto? Hvorfor feiler workflowen? 
+---
+
+I [docker.yml](.github/workflows/docker.yml) er det lagt inn to variabler: ```username``` og ```password```. Disse linker til github sine secrets-variabler.
+Jeg går derfor inn på dockerhub og oppretter en ny token, og oppretter to nye repository secrets i settings, med brukernavnet mitt og det genererte tokenet (DOCKER_HUB_USERNAME og DOCKER_HUB_TOKEN).
+
+Docker build skal nå kjøre grønt.
 
 ### Oppgave 2
+<details><summary>Oppgavetekst</summary>
 
 Når du har fikset problemet i oppgave 1, og du forøker å kjøre applikasjonen fra Docker hub med for eksempel; 
 ```docker run <dockerhub brukeravn>/shopifly```
@@ -354,8 +198,54 @@ Vi kan få bedre kontroll på byggeprosessen ved også å gjøre maven bygget i 
 
 * Skriv om Dockerfilen. til bruke en *Multi Stage Build*. 
 * Du må også rydde opp i ```docker.yml``` workflow filen... Fjern ønødvendige "steps".
+</details>
+
+---
+
+Feilmeldingen oppstår fordi Dockercontaineren bruker java8, samtidig som applikasjonen ble kompilert i java 11.
+[Dockerfile](Dockerfile) endres derfor til: da kompilerer vi og bygger i Dockerfila.
+````Dockerfile
+FROM maven:3.6-jdk-11 as build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn package
+
+FROM adoptopenjdk/openjdk11
+COPY --from=build app/target/onlinestore-0.0.1-SNAPSHOT.jar /app/application.jar
+EXPOSE 8081
+ENTRYPOINT ["java","-jar","/app/application.jar"]
+````
+
+Endrer også [docker.yml](.github/workflows/docker.yml) til:
+```yml
+name: Docker build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/shopifly:latest
+```
 
 ### Oppave 3
+<details><summary>Oppgavetekst</summary>
 
 Gaffel consulting var ikke klar over at det var en dårlig idè å ha sitt container image i et offentlig Docker hub repository - og Shopifly har allerede sett at flere hundre har lastet ned deres container image.
 Et privat ECR repository i AWS er en bedre løsning.
@@ -364,6 +254,13 @@ Et privat ECR repository i AWS er en bedre løsning.
 * Endre ```docker.yml```, workflow til å pushe docker container til Amazon ECR, istedet for docker hub
 * Beskriv deretter med egne ord hva sensor må gjøre for å få sin fork til å laste opp container image til sitt eget ECR repo.
 * Docker workflow skal pushe et container image med en tag som er lik GitHub commit hash (id); for eksempel ```244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn_exam_practice:8234efc```
+</details>
+
+--- 
+Oppretter ECR repository 1053 -> Dette gjør jeg via UI.
+
+Endrer [docker.yml](.github/workflows/docker.yml), og kopierer over ferdig-genererte fra push commands fra ECR, men endrer endingen på lenkene til:
+```1053:$rev```
 
 ## Del 4 - Metrics, overvåkning og alarmer
 
@@ -372,6 +269,7 @@ Cloud9 er ikke verdens beste IDE. Det anbefales å gjøre den følgende oppgaven
 ;-) 
 
 ### Oppgave 1
+<details><summary>Oppgavetekst</summary>
 
 Gjør nødvendige endringer i ```pom.xml``` - og koden, slik at applikasjonen kan levere Metrics til CloudWatch ved hjelp av Spring Boot Micrometer.
 Konfigurer applikasjonen til å bruke ditt eget ClodWatch Metrics Namespace - ditt Kandidatnummer. 
@@ -379,8 +277,40 @@ Konfigurer applikasjonen til å bruke ditt eget ClodWatch Metrics Namespace - di
 *OBS!* Når dere innfører Micrometer i koden deres, vil enhetstesten slutte å fungere. Dere får lov til å slette 
 enhetstesten når dere starter å jobbe med denne oppgaven. I "virkeligheten" ville vi brukt et rammeverk som feks Mockito  
 til å "mocke" micrometer fra enhetstestene, men det er ikke ønskelig at dere skal bruke tid på dette under eksamen!
+</details>
+
+Kommenterer ut testen.
+Legger inn Micrometer og AWS-sdk i pom-fila:
+```xml
+...
+<properties>
+  <java.version>11</java.version>
+  <aws.sdk.version>2.17.292</aws.sdk.version>
+</properties>
+<dependenies>
+    ...
+  <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-cloudwatch2</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>utils</artifactId>
+    <version>${aws.sdk.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>aws-sdk-java</artifactId>
+    <version>${aws.sdk.version}</version>
+    <scope>provided</scope>
+  </dependency>
+</dependenies>
+...
+```
+Oppretter [MetricsConfig.java](src/main/java/no/shoppifly/MetricsConfig.java), med mitt kandidatnummer i configuration.
 
 ### Oppgave 2 
+<details><summary>Oppgavetekst</summary>
 
 Endre Javakoden slik at den rapporterer følgende Metrics til CloudWatch
 
@@ -388,8 +318,17 @@ Endre Javakoden slik at den rapporterer følgende Metrics til CloudWatch
 * "cartsvalue" - Total sum med penger i handlekurver på et gitt tidspunkt i tid - verdien kan gå opp og ned ettersom kunder sjekker ut handlekurver og nye blir laget.
 * "checkouts" - Totalt antall  handlevogner er blitt sjekket ut
 * "checkout_latency" - Gjennomsnittlig responstid for Checkout metoden i Controller-klassen.
+</details>
+
+Se: [ShoppingCartController.java](src/main/java/no/shoppifly/ShoppingCartController.java).
+Også lagt inn: 
+```java
+float total();
+```
+i [CartService.java](src/main/java/no/shoppifly/CartService.java).
 
 ## Del 5 - Terraform og CloudWatch Dashboards
+<details><summary>Oppgavetekst</summary>
 
 Konsulentene i Gaffel consulting hadde ambisiøse planer om å få Terraform-koden i dette repoet til å kjøre
 i GitHub Actions. Workflowen kjørte bra første gang, men nå feiler den hver gang, og klager over at en bucket med samme navn allerede eksisterer.
@@ -401,8 +340,10 @@ Your previous request to create the named bucket succeeded and you already own i
 ```
 
 De kommenterte derfor bare ut S3 bucket koden, og gikk videre til neste oppgave. 
+</details>
 
 ### Oppgave 1 
+<details><summary>Oppgavetekst</summary>
 
 Se på ```provider.tf filen```. 
 
@@ -410,25 +351,34 @@ Se på ```provider.tf filen```.
 * Gjør nødvendige Endre slik denne slik at Terraform kan kjøres flere ganger uten å forsøke å opprette ressurser hver gang den kjører.
 * Fjern kommentarene fra ```databacket.tf``` slik at Terraform-koden  også lager en S3 bucket. 
 
+</details>
+
 ### Oppgave 2
+<details><summary>Oppgavetekst</summary>
 
 Et annet problem er at "terraform apply" bare blir kjørt hver gang noen lager en Pull request. Vi ønsker bare å kjøre apply når
 noen gjør en push mot main branch. 
 
 Fullfør workflow filen ```cloudwatch_dashboard.yml``` filen slik at apply bare bli kjørt på push mot main branch, og terraform plan   
 på når det lages en Pull request 
+</details>
 
 ### Oppgave 3
+<details><summary>Oppgavetekst</summary>
 
 * Fullfør cloudwatch_dashboard.tf slik at koden lager et CloudWatch Dashboard med *fire widgets*. Disse skal vise metrikkene fra oppgave 2, Del 4. 
 * Antall handlekurver på et gitt tidspunkt i tid - verdien kan gå opp og ned ettersom kunder sjekker ut handlekurver og nye blir laget.
 * Total sum med penger i handlekurver på et gitt tidspunkt i tid - verdien kan gå opp og ned ettersom kunder sjekker ut handlekurver og nye blir laget.
 * Totalt antall  handlevogner er blitt "sjekket ut" per time
 * Gjennomsnittlig responstid for Checkout metoden i Controller-klassen.
+</details>
 
 ### Alarmer
+
+<details><summary>Oppgavetekst</summary>
 
 Lag Terraform-kode som oppretter
 
 * En CloudWatch Alarm  som løses ut dersom antall handlekurver over tre repeternde perioder,på fem minutter, overstiger verdien 5
 * Alarmen skal sendes som e-post til en addresse som gis i workflow filen ```cloudwatch_dashboard.yml``` 
+</details>
