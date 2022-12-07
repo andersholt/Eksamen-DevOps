@@ -14,7 +14,6 @@ jobs:
       AWS_REGION: eu-west-1
       CANDIDATE_ID: 1053
       CANDIDATE_EMAIL: anders.bratland@hotmail.com
-      
 
     steps:
       - uses: actions/checkout@v3

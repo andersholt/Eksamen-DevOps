@@ -36,10 +36,14 @@ public class ShoppingCartController{
     public String checkout(@RequestBody Cart cart) {
         long startTime = System.currentTimeMillis();
         String checkout = cartService.checkout(cart);
-        meterRegistry.counter("checkouts").increment(1);
+        meterRegistry.counter("checkouts").increment();
+        
         checkoutTimer.record(Duration
                 .ofMillis(System.currentTimeMillis()
                         - startTime));
+                        
+        meterRegistry.counter("carts").increment(-1);
+
         return checkout;
     }
 
@@ -51,13 +55,15 @@ public class ShoppingCartController{
      */
     @PostMapping(path = "/cart")
     public Cart updateCart(@RequestBody Cart cart) {
-        Gauge.builder("carts", cartService.getAllCarts(), List::size)
-                .strongReference(true)
-                .register(meterRegistry);
+   
         Gauge.builder("cartsvalue", cartService.total(), Float::doubleValue)
-                .strongReference(true)
                 .register(meterRegistry);
-        return cartService.update(cart);
+
+        if(cart.getId() == null){
+           meterRegistry.counter("carts").increment();
+        }
+
+        return cart;
     }
 
     /**
