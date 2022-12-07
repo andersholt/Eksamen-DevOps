@@ -33,8 +33,6 @@ class NaiveCartImpl implements CartService {
     public List<String> getAllCarts() {
         return new ArrayList<>(shoppingCarts.keySet());
     }
-
-    // @author Jim; I'm so proud of this one, took me one week to figure out !!!
     public float total() {
         return shoppingCarts.values().stream()
                 .flatMap(c -> c.getItems().stream()
