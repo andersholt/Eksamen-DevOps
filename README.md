@@ -391,3 +391,6 @@ Lag Terraform-kode som oppretter
 * En CloudWatch Alarm  som løses ut dersom antall handlekurver over tre repeternde perioder,på fem minutter, overstiger verdien 5
 * Alarmen skal sendes som e-post til en addresse som gis i workflow filen ```cloudwatch_dashboard.yml``` 
 </details>
+
+For at cloudwatch skal ha muligheten til å sende meg en mail, må jeg registrere mailen min på eventet i SNS.
+

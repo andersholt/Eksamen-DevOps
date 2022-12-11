@@ -1,8 +1,11 @@
 package no.shoppifly;
 
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.web.bind.annotation.*;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -12,20 +15,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController()
-public class ShoppingCartController{
-
-    private final Timer checkoutTimer;
+public class ShoppingCartController implements ApplicationListener<ApplicationReadyEvent> {
     private final MeterRegistry meterRegistry;
-    private final AtomicInteger cartsValue;
-    private final AtomicInteger amountOfCarts;
-
     private final CartService cartService;
     @Autowired
     public ShoppingCartController(MeterRegistry meterRegistry, CartService cartService){
         this.meterRegistry = meterRegistry;
-        checkoutTimer = meterRegistry.timer("checkout_latency");
-        cartsValue = meterRegistry.gauge("cartsvalue", new AtomicInteger(0));
-        amountOfCarts = meterRegistry.gauge("carts", new AtomicInteger(0));
         this.cartService = cartService;
     }
 
@@ -40,15 +35,11 @@ public class ShoppingCartController{
      * @return an order ID
      */
     @PostMapping(path = "/cart/checkout")
+    @Timed("checkout_latency")
     public String checkout(@RequestBody Cart cart) {
-        long startTime = System.currentTimeMillis();
         String checkout = cartService.checkout(cart);
+        System.out.println(getCart(checkout));
         meterRegistry.counter("checkouts").increment();
-        cartsValue.set((int) cartService.total());
-        amountOfCarts.set(cartService.getAllCarts().size());
-        checkoutTimer.record(Duration
-                .ofMillis(System.currentTimeMillis()
-                        - startTime));
         return checkout;
     }
 
@@ -60,8 +51,6 @@ public class ShoppingCartController{
      */
     @PostMapping(path = "/cart")
     public Cart updateCart(@RequestBody Cart cart) {
-        cartsValue.set((int) cartService.total());
-        amountOfCarts.set(cartService.getAllCarts().size());
         return cartService.update(cart);
     }
 
@@ -70,6 +59,16 @@ public class ShoppingCartController{
      *
      * @return
      */
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+
+        Gauge.builder("cartsvalue", cartService,
+                b -> b.total()).register(meterRegistry);
+
+        Gauge.builder("carts", cartService,
+                b -> b.getAllCarts().size()).register(meterRegistry);
+    }
     @GetMapping(path = "/carts")
     public List<String> getAllCarts() {
         return cartService.getAllCarts();

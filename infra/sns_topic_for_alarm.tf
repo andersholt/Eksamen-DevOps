@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_metric_alarm" "Too_many_checkouts" {
-  alarm_name          = "to_many_checkouts"
+  alarm_name          = "too_many_checkouts"
   metric_name = "checkouts.count"
   namespace = "1053"
 
