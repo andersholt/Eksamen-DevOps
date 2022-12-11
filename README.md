@@ -380,7 +380,7 @@ Bruker github.event_name for å sjekke for pull_request eller push og github.ref
 * Gjennomsnittlig responstid for Checkout metoden i Controller-klassen.
 </details>
 
-Se [dashboards.tf](infra/dashboards.tf).
+Gjør nødvendige endringer i [dashboards.tf](infra/dashboards.tf).
 
 ### Alarmer
 
