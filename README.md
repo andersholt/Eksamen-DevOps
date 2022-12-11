@@ -353,6 +353,10 @@ Se på ```provider.tf filen```.
 
 </details>
 
+Endrer [provider.tf](infra/provider.tf)
+
+Fjerner kommentarer fra [databucket.tf](infra/databucket.tf)
+
 ### Oppgave 2
 <details><summary>Oppgavetekst</summary>
 
@@ -363,6 +367,9 @@ Fullfør workflow filen ```cloudwatch_dashboard.yml``` filen slik at apply bare 
 på når det lages en Pull request 
 </details>
 
+Gjør nødvendige endringer i [cloudwatch_dashboard.yml](.github/workflows/cloudwatch_dashboard.yml)
+
+Bruker github.event_name for å sjekke for pull_request eller push og github.ref for å sjekke branch.
 ### Oppgave 3
 <details><summary>Oppgavetekst</summary>
 
@@ -372,6 +379,8 @@ på når det lages en Pull request
 * Totalt antall  handlevogner er blitt "sjekket ut" per time
 * Gjennomsnittlig responstid for Checkout metoden i Controller-klassen.
 </details>
+
+Se [dashboards.tf](infra/dashboards.tf).
 
 ### Alarmer
 
