@@ -55,7 +55,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           ]
         ],
         "period": 3600,
-        "stat": "Maximum",
+        "stat": "Sum",
         "region": "eu-west-1",
         "title": "Total checkouts"
       }
@@ -74,7 +74,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           ]
         ],
         "period": 10,
-        "stat": "Maximum",
+        "stat": "Average",
         "region": "eu-west-1",
         "title": "Average checkout latency"
       }
