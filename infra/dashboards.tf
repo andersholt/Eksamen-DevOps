@@ -16,7 +16,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "carts.value"
           ]
         ],
-        "period": 10,
+        "period": 300,
         "stat": "Maximum",
         "region": "eu-west-1",
         "title": "Amount of carts"
@@ -35,7 +35,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "cartsvalue.value"
           ]
         ],
-        "period": 10,
+        "period": 300,
         "stat": "Maximum",
         "region": "eu-west-1",
         "title": "Sum of money in carts"
@@ -54,7 +54,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "checkouts.count"
           ]
         ],
-        "period": 10,
+        "period": 300,
         "stat": "Sum",
         "region": "eu-west-1",
         "title": "Total checkouts"
@@ -79,7 +79,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "no.shoppifly.ShoppingCartController"
           ]
         ],
-        "period": 10,
+        "period": 3600,
         "stat": "Average",
         "region": "eu-west-1",
         "title": "Average checkout latency"

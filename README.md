@@ -4,74 +4,83 @@ Lenkene i svarene er lenket til siste versjon av filene, jeg legger derfor ved k
 
 ## Del 1 DevOps-prinsipper
 
-Beskriv med egne ord;
+Hva er utfordringene med dagens systemutviklingsprosess - og hvordan vil innføring av DevOps kunne være med på å løse
+disse? Hvilke DevOps prinsipper blir brutt?
 
-* Hva er utfordringene med dagens systemutviklingsprosess - og hvordan vil innføring av DevOps kunne være med på å løse
-  disse? Hvilke DevOps prinsipper blir brutt?
+Shoppifly har følgende problemer/utfordringer:
+  *	De deployer kode 4 ganger i året.
+  *	Å deploye ofte har tidligere ført til ustabilitet:
 
-De deployer kode første mandag i kvartalet.
+Dette fører til at de må ansette flere testere.
+Senker frekvensen av leveransene.
+Utviklingslederne må gå godkjenne alle leveranser.
+* Ved deployment feiler koden ofte, som gjør at de må rulle tilbake til forrige versjon.
+* Leveransen skjer ikke automatisk. 
+* En egen avdeling installerer leveransen i produksjon.
 
-Svar:
-Problemet her er at det da vil være mye kode å gå gjennom for hver leveranse. Utviklingslederne må fortsatt bruke mye 
-tid på å gå gjennom alle leveransene, og mye funksjonalitet må derfor bli skrotet.
+### Hvilke DevOps-prinsipper blir brutt?
+Shoppifly bryter Flyt-prinsippet og tilbakemeldings-prinsippet.
 
-De pleide å deploye oftere før- men dette førte til ustabilitet. Selskapet ansatte flere testere, 
-og startet en prosess der utviklingsledere måtte se over og godkjenne alle leveranser. 
-De senket samtidig frekvensen på leveransene sine for å få bedre stabilitet.
+Shoppifly har en god del «waste» i verdikjeden sin. Siden deployment skjer 4 ganger i året, og vi får en opphoping av oppgaver som må gjennomgås av utviklingslederne før eventuelle feil kan rettes opp av utviklingsavdelingen. Utviklerne må da kanskje jobbe med kode de skrev for 3 måneder siden, dette fører til at de må bryte det de jobbet med fra før for å løse den oppståtte feilen. Driftsavdelingen må vente lenge på nye deployments, og får mange store oppgaver samtidig.f
+De har også en unødvendig overlevering mellom utviklingsavdelingen og driftsavdelingen. Denne kan vi løse ved å ikke dele opp i to større avdelinger, men heller i DevOps-team. Med dette et DevOps-team vil ofte løse oppstående problemer raskere enn
+Bedriften har egne testere, dette gjør at utviklerne kan lene seg litt på at de skal finne feilen i koden deres, utviklerne leverer da «dårligere» kode. De bruker også tilsynelatende manuelle tester for å teste koden. De har heller ikke en fungerende CI/CD-pipeline.
 
-Svar:
-Det virker som om selve koden som ble deployet var av hørere kvalitet tidligere, men at de fikk en
-flaskehals i og med at utviklingslederne måtte bruke tid på å se over og godkjenne leveransene. Her
-kunne de fått en bedre flyt ved at flere går over koden og sørger for at alle leveransene går gjennom.
+Å deploye sjeldent vil ofte føre til en større opphoping av oppgaver enn å deploye ofte. Disse oppgavene kan ofte bli store og vanskelig å gjøre. Når deployment skjer fire ganger i året, kan problemer for kode som ble skrevet 3 måneder tidligere by på problemer, disse problemene kan være komplekse og vanskelig for drift- eller utviklingsavdelingen å rette opp. Utviklerne som skrev koden, kan ha glemt viktige elementer av funksjonaliteten i leveransen, som gjør at utviklerne må bruke tid på å sette seg inn i kode som de skrev flere måneder tilbake.
 
-Når de deployer, feiler det fortsatt ofte. Da ruller de tilbake til forrige versjon, og ny
-funksjonalitet blir derfor ofte forsinket i månedsvis
+Det er åpenbart at prosessen de har hatt gjør at Shoppifly må bruke mer ressurser på testere, siden koden ikke er av tilstrekkelig kvalitet.
 
-Svar:
+Å senke deploymentfrekvensen vil igjen føre til større leveranser som kan være krevende å håndtere.
 
+Utviklingslederne må bruke tid og ressurser på å gå gjennom leveransene. Ved å gi så mange og store oppgaver til utviklingslederne vil vi få en flaskehals i utviklingsprosessen. I tillegg, kommer disse oppgavene i store bolker fire ganger i året. Dette gjør at leveransene blir enda mer forsinket, siden utviklingslederne må sette seg inn i og kvalitetssikre store mengder kode av gangen, dette fører til tapt tid og muligvis skroting av funksjonalitet.
 
-Leveransen skjer ved at Utviklingsteamet bruker FTP til å overføre en Spring boot JAR sammen med 
-dokumentasjon i en ZIP. En egen avdeling tar i mot disse filene og installerer i AWS / Produksjon.
+Koden feiler ofte ved deployment, det kan være feil i selve konfigureringen av produksjonsmiljøet. Dette fører også til tapt tid og funksjonalitet.
 
-Svar:
+Å dele opp i en utviklingsavdeling og en driftsavdeling gjør at prosessen krever flere overleveringer. Feil i produksjon og deployment, vil ligge på driftsavdelingen, som har mindre forståelse for hvordan koden virker enn de som har skrevet den.
 
-Her kunne de ha opprettet en pipeline i github, som deployer for de automatisk.
+Shoppifly blir med dette mindre konkurransedyktige, i form av ressurstap, funksjonalitet og sikkerhet.
 
+Løsning:
 
+Ved å bruke kontinuerlig leveranse og implementasjon, vil vi ikke få en like stor opphoping av oppgaver, vi vil få færre problemer i produksjon samtidig, og problemene vil ofte være mer nærliggende hos utviklerne som nettopp har skrevet koden, dette vil føre til en mer effektiv feilretting. I tillegg til dette vil utviklerne ofte ta mer ansvar for at koden som leveres fungerer, da dette ikke blir et problem de må løse om opp til 3 måneder.
+Vi bør ha et DevOps-team som står for både utvikling og deployment. Problemer som oppstår i produksjon, vil være lettere for et DevOps-team å håndtere enn for to oppdelte avdelinger.
+Ved å deploye så fort funksjonalitet er ferdig utviklet vil feilene i koden oppstå raskere, det vil ikke være fire perioder i året hvor det er mange feil samtidig, men heller små feil av og til, som blir enkelt for DevOps-teamet å løse.
+Vi ønsker heller ikke at utviklingslederne må gå gjennom all kode som deployes. Automatisering kan gjøre denne delen av arbeidet mer effektivt, da utviklerne kan få respons på om koden faktisk virker før den deployes. Det anbefales at Shoppifly setter opp en CI- og CD-pipeline som gjør mye av denne repetitive kvalitetssikringen før deployment skjer raskere og likt hver gang. Dette vil også minske arbeidet for utviklingslederne, da de slipper å gå gjennom kode som ikke består testene og driftsavdelingen slipper å bruke tid på leveransen.
+Et DevOps-team, vil sitte på mer ansvar for egen kode, og de vil trolig gjøre mer for å sikre seg at koden fungerer før de pusher.
+Ved å bruke DevOps-prinsippene, vil Shoppifly få mer funksjonalitet, raskere feilretting og trolig høyere kvalitet på applikasjonen
 
-
-
+---
 * En vanlig respons på mange feil under release av ny funksjonalitet er å gjøre det mindre hyppig, og samtidig forsøke å legge på mer kontroll og QA. Hva er problemet med dette ut ifra et DevOps perspektiv, og hva kan være en bedre tilnærming?
+
+Ut ifra et DevOps-perspektiv, ønsker vi å ha gjøre dette ofte. Et DevOps-team fokuserer på å forstå kundebehovet, og med dette ofte at funksjonalitet er ønskelig så raskt som mulig.
+
+Det er vanskelig å release funksjonalitet sjeldnere og legge inn mer kontroller og kvalitetssikring samtidig. Sjelden release fører ofte til at mye kode endres samtidig, og med dette at større og flere feil oppstår samtidig.
+Vi ønsker heller å ha en høyere releasefrekvens. Med høy releasefrekvens vil feilene kanskje oppstå hyppigere, men feilene bør med dette være mindre og lettere å håndtere.
+Vi kan også vurdere å la noen av brukerne få tilgang til den nye funksjonaliteten, slik at vi får tilbakemelding fra de om noe går galt, da minsker vi konsekvensen av en feil i produksjon.
+
+---
 * Teamet overleverer kode til en annen avdelng som har ansvar for drift - hva er utfordringen med dette ut ifra et DevOps perspektiv, og hvilke gevinster kan man få ved at team han ansvar for både drift- og utvikling?
 
-Den største utfordringen ved å dele opp i en utviklings-avdeling og en drift-avdeling, er at drift-avdelingen ikke nødvendigvis forstår koden og virkemåten bak funksjonaliteten som er levert. Dette kan føre til tapt tid og ressurser da driftsavdelingen må håndtere denne feilen. Samtidig har utviklerteamet hands on erfaring med koden, og forstår kanskje hva som har gått galt i løsningen, og hvordan det skal rettes.
+Den største utfordringen ved å dele opp i en utviklings-avdeling og en drift-avdeling, er at drift-avdelingen ikke nødvendigvis forstår koden og virkemåten bak funksjonaliteten som er levert. Dette kan føre til tapt tid og ressurser da driftsavdelingen må håndtere denne feilen. Samtidig har utviklerteamet hands on erfaring med koden, og forstår kanskje hva som har gått galt i løsningen, og hvordan det skal rettes. Det gir også enda et overleveringsledd som utviklerne og drift må håndtere.
 
-Utviklerteamet vil trolig også finne frem den beste løsningen for feilen i koden, 
-samtidig som ops-teamet kanskje vil finne den raskeste løsningen for å løse feilen 
-som har oppstått -> Feilrettingen kan være svak, noe som gjør at løsningen kan feile 
-enda en gang på samme sted.
+Utviklerteamet vil trolig også finne frem den beste løsningen for feilen i koden, samtidig som dev-teamet kanskje vil finne den raskeste løsningen for å løse feilen som har oppstått
 
-Dette fører til tapt tid, i og med at driftsavdelingen må sette seg inn i kode som 
-utviklings-avdelingen allerede har kjennskap til.
-
+Feilrettingen kan være svak, noe som gjør at løsningen kan feile enda en gang på samme sted.
+Dette fører til tapt tid, i og med at driftsavdelingen må sette seg inn i kode som utviklings-avdelingen allerede har kjennskap til.
 Noen av gevinstene ved å kombinere disse avdelingen er:
--	Sikrere drift: Dersom feil oppstår vil et kombinert team ha kunnskap med hvordan 
-- systemet fungerer, og feilrettingen vil derfor i de fleste tilfeller gå raskere, 
-- og det kombinerte teamet vil mest sannsynlig også komme med en god måte å rette opp 
-- feilen (ved å foreksempel ikke legge in exceptions på funksjonalitet som er nødvendig).
--	Raskere feilretting.
--	Vi slipper endring av kontekst for de ulike teamene.
-     Hva taper man ved å kombinere team:
--	Man får kanskje tregere utvikling, siden man teamet vil ha et større
-     ansvarsområde.
-     Vi ønsker ferrest mulig overleveringer.
+- 	Sikrere drift: Dersom feil oppstår vil et kombinert team ha kunnskap med hvordan
+systemet fungerer, og feilrettingen vil derfor i de fleste tilfeller gå raskere,
+og det kombinerte teamet vil mest sannsynlig også komme med en god måte å rette opp feilen (ved å foreksempel ikke legge in exceptions på funksjonalitet som er nødvendig).
+- Raskere feilretting.
+- 	Vi slipper endring av kontekst for de ulike teamene. Hva taper man ved å kombinere team:
+- 	Færre overleveringer.
 
 
+
+---
 * Å release kode ofte kan også by på utfordringer. Beskriv hvilke- og hvordan vi kan bruke DevOps prinsipper til å redusere
   eller fjerne risiko ved hyppige leveraner.
 
-Automatisering: Vi har har en CI/CD pipeline som kjører alle tester ved deployment, og godkjenning av pull/merge-requests 
-inn til main/master branchen i koden. Vi bør også legge inn en sperre for å pushe kode direkte til main/master.
+Om vi har har en CI/CD pipeline som kjører alle tester ved deployment, og godkjenning av pull/merge-requests inn til main/master branchen i koden. For å kunne release kode ofte, er det viktig å ha en robust automatisert pipeline med gode tester for å kvalitetssikre koden.
 
 ## Del 2 - CI
 
@@ -85,9 +94,10 @@ Vi endrer kriteriene for at workflowen skal kjøre, her vil den kjøre på push 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 ```
+Om jeg misforsto oppgaven over til at det skal være pull_request til main og push til main så må vi legge inn "branches: - main" på neste linje.
 
 ### Oppgave 2 
 <details><summary>Oppgavetekst</summary>
@@ -160,8 +170,10 @@ Beskriv hva du må gjøre for å få workflow til å fungere med din DockerHub k
 
 ---
 
-I [docker.yml](.github/workflows/docker.yml) er det lagt inn to variabler: ```username``` og ```password```. Disse linker til github sine secrets-variabler.
-Jeg går derfor inn på dockerhub og oppretter en ny token, og oppretter to nye repository secrets i settings, med brukernavnet mitt og det genererte tokenet (DOCKER_HUB_USERNAME og DOCKER_HUB_TOKEN).
+I [docker.yml](.github/workflows/docker.yml) er det lagt inn to variabler: ```username``` og ```password```. 
+Disse linker til github sine secrets-variabler.
+Jeg går derfor inn på dockerhub og oppretter en ny token, og oppretter to nye repository secrets i github i settings, 
+med brukernavnet mitt og det genererte tokenet (DOCKER_HUB_USERNAME og DOCKER_HUB_TOKEN).
 
 Docker build skal nå kjøre grønt.
 
@@ -217,7 +229,7 @@ EXPOSE 8081
 ENTRYPOINT ["java","-jar","/app/application.jar"]
 ````
 
-Endrer også [docker.yml](.github/workflows/docker.yml) til:
+Endrer også [docker.yml](.github/workflows/docker.yml) til slik at det er i dockerimaget vi bygger applikasjonen:
 ```yml
 name: Docker build
 on:
@@ -259,8 +271,8 @@ Et privat ECR repository i AWS er en bedre løsning.
 --- 
 Oppretter ECR repository 1053 -> Dette gjør jeg via UI.
 
-Endrer [docker.yml](.github/workflows/docker.yml), og kopierer over ferdig-genererte fra push commands fra ECR, men endrer endingen på lenkene til:
-```1053:$rev```
+Endrer [docker.yml](.github/workflows/docker.yml), og kopierer over ferdig-genererte push commands fra ECR, men endrer endingen på lenkene til:
+```1053:$rev``` for å få commit hashen fra github som ending.
 
 ## Del 4 - Metrics, overvåkning og alarmer
 
@@ -321,6 +333,7 @@ Endre Javakoden slik at den rapporterer følgende Metrics til CloudWatch
 </details>
 
 Se: [ShoppingCartController.java](src/main/java/no/shoppifly/ShoppingCartController.java).
+
 Også lagt inn: 
 ```java
 float total();
@@ -353,6 +366,8 @@ Se på ```provider.tf filen```.
 
 </details>
 
+Problemet oppstår fordi vi forsøker å 
+
 Endrer [provider.tf](infra/provider.tf)
 
 Fjerner kommentarer fra [databucket.tf](infra/databucket.tf)
@@ -381,6 +396,7 @@ Bruker github.event_name for å sjekke for pull_request eller push og github.ref
 </details>
 
 Gjør nødvendige endringer i [dashboards.tf](infra/dashboards.tf).
+Bruker genererte metrics-parametere fra GUIet til cloudwatch for å velge korrekt datapunkt for checkout_latency.
 
 ### Alarmer
 
@@ -392,5 +408,6 @@ Lag Terraform-kode som oppretter
 * Alarmen skal sendes som e-post til en addresse som gis i workflow filen ```cloudwatch_dashboard.yml``` 
 </details>
 
+Jeg oppretter en alarm i [sns_topic_for_alarm.tf](infra/sns_topic_for_alarm.tf).
 For at cloudwatch skal ha muligheten til å sende meg en mail, må jeg registrere mailen min på eventet i SNS.
 
