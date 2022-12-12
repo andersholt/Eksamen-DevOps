@@ -366,9 +366,34 @@ Se på ```provider.tf filen```.
 
 </details>
 
-Problemet oppstår fordi vi forsøker å 
+Problemet oppstår fordi vi forsøker å opprette en ny bucket, siden vi ikke har definert en state-fil. Hvis vi ser på hva som skjer før feilmeldingen:
+````
+Plan: 5 to add, 0 to change, 0 to destroy.
+aws_cloudwatch_dashboard.main: Creating...
+aws_sns_topic.alarms: Creating...
+aws_s3_bucket.analyticsbucket: Creating...
+aws_cloudwatch_dashboard.main: Creation complete after 1s [id=1053]
+aws_sns_topic.alarms: Creation complete after 4s [id=arn:aws:sns:eu-west-1:244530008913:alarm-topic-1053]
+aws_sns_topic_subscription.user_updates_sqs_target: Creating...
+aws_cloudwatch_metric_alarm.Too_many_checkouts: Creating...
+aws_sns_topic_subscription.user_updates_sqs_target: Creation complete after 1s [id=arn:aws:sns:eu-west-1:244530008913:alarm-topic-1053:172f95e4-5336-41c4-b4e6-57e3579cd179]
+aws_cloudwatch_metric_alarm.Too_many_checkouts: Creation complete after 1s [id=too_many_checkouts]
+````
 
-Endrer [provider.tf](infra/provider.tf)
+Vi ser at vi forsøker å opprette ny bucket, når denne allerede eksisterer. Grunnen til a dette skjer, er at vi ikke har definert en terraform state.
+Dersom vi definerer hvor state-filen er, kan terraform lese av terraform-staten og modifisere state.
+
+Endrer slik at vi har en definert state: [provider.tf](infra/provider.tf)
+
+Da får vi:
+````
+aws_s3_bucket.analyticsbucket: Refreshing state... [id=analytics-1053]
+aws_cloudwatch_dashboard.main: Refreshing state... [id=1053]
+aws_sns_topic.alarms: Refreshing state... [id=arn:aws:sns:eu-west-1:244530008913:alarm-topic-1053]
+aws_sns_topic_subscription.user_updates_sqs_target: Refreshing state... [id=arn:aws:sns:eu-west-1:244530008913:alarm-topic-1053:172f95e4-5336-41c4-b4e6-57e3579cd179]
+aws_cloudwatch_metric_alarm.Too_many_checkouts: Refreshing state... [id=too_many_checkouts]
+````
+Og vi ser at denne "refresher" state i stedet.
 
 Fjerner kommentarer fra [databucket.tf](infra/databucket.tf)
 
